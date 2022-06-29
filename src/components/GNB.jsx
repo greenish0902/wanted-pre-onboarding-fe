@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 
 import styled from 'styled-components';
 import { MdHomeFilled } from 'react-icons/md';
@@ -6,12 +6,12 @@ import { FiSearch, FiSend, FiPlusSquare, FiHeart, FiLogOut } from 'react-icons/f
 import { TbBrandSafari } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
 
-const GNB = () => {
+const GNB = memo(() => {
   const navigate = useNavigate();
-  const handleSignout = () => {
+  const handleSignout = useCallback(() => {
     localStorage.setItem('username', '');
     navigate('/');
-  };
+  }, []);
 
   return (
     <NavWrapper>
@@ -34,11 +34,12 @@ const GNB = () => {
       </div>
     </NavWrapper>
   );
-};
+});
 
+GNB.displayName = 'GNB';
 export default GNB;
 
-const NavWrapper = styled.nav`
+const NavWrapper = memo(styled.nav`
   padding: 12px;
   height: 48px;
   position: sticky;
@@ -89,5 +90,12 @@ const NavWrapper = styled.nav`
     .input-box {
       display: none;
     }
+
+    .icons {
+      font-size: 16px;
+      * {
+        margin: 2px;
+      }
+    }
   }
-`;
+`);

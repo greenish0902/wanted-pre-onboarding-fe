@@ -1,19 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { FiMoreHorizontal, FiHeart, FiMessageCircle, FiSend, FiBookmark } from 'react-icons/fi';
 import styled from 'styled-components';
 
 import CommentItem from './CommentItem';
 import CommentForm from './CommentForm';
 
-const FeedItem = ({ item }) => {
+const FeedItem = memo(({ item }) => {
+  const [loaded, setLoaded] = useState(false);
   const [comments, setComments] = useState([]);
-  // item?.image?.onload &&
-  const handleNewSubmit = (data) => {
-    setComments((comments) => [...comments, { ...data }]);
-  };
+
+  const handleNewSubmit = useCallback(
+    (data) => {
+      setComments((comments) => [...comments, { ...data }]);
+    },
+    [comments]
+  );
 
   return (
-    <ItemContainer>
+    <ItemContainer style={{ display: loaded ? 'block' : 'none' }}>
       <div className="box top">
         <div className="box left">
           <img src={item.profileImg} alt={item.username} />
@@ -21,7 +25,7 @@ const FeedItem = ({ item }) => {
         </div>
         <FiMoreHorizontal />
       </div>
-      <img src={item.img} alt="main image" className="mainImg" />
+      <img src={item.img} alt="main image" className="mainImg" onLoad={() => setLoaded(true)} />
       <div className="box icons">
         <div className="left">
           <FiHeart />
@@ -33,7 +37,6 @@ const FeedItem = ({ item }) => {
         </div>
       </div>
       <div className="box">
-        {/* <span className="username">{item.username}</span> */}
         <span className="like">좋아요 {(item.like * 1).toLocaleString()}개</span>
       </div>
       {comments.length > 0 && (
@@ -46,11 +49,12 @@ const FeedItem = ({ item }) => {
       <CommentForm onSubmit={handleNewSubmit} />
     </ItemContainer>
   );
-};
+});
 
+FeedItem.displayName = 'FeedItem';
 export default FeedItem;
 
-const ItemContainer = styled.li`
+const ItemContainer = memo(styled.li`
   margin-bottom: 24px;
   display: flex;
   flex-direction: column;
@@ -71,9 +75,9 @@ const ItemContainer = styled.li`
       .left {
         padding: 0;
         img {
-          margin-right: 12px;
           width: 48px;
           height: 48px;
+          margin-right: 12px;
           border-radius: 50%;
         }
       }
@@ -96,6 +100,7 @@ const ItemContainer = styled.li`
   }
 
   .mainImg {
+    width: 100%;
     object-fit: cover;
   }
 
@@ -103,4 +108,4 @@ const ItemContainer = styled.li`
   .like {
     font-weight: 600;
   }
-`;
+`);

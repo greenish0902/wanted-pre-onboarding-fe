@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import styled from 'styled-components';
 import { RiChatSmile3Line } from 'react-icons/ri';
 
-const CommentForm = (props) => {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const comment = event.target.inputBox.value;
-    const username = localStorage.getItem('username').split('@')[0];
-    props.onSubmit({ username, comment });
-    event.target.reset();
-  };
+const CommentForm = memo((props) => {
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      const comment = event.target.inputBox.value;
+      const username = localStorage.getItem('username').split('@')[0];
+      if (!comment) return;
+      props.onSubmit({ username, comment });
+      event.target.reset();
+    },
+    [props]
+  );
 
   return (
     <FormContainer onSubmit={handleSubmit}>
@@ -22,11 +26,12 @@ const CommentForm = (props) => {
       </div>
     </FormContainer>
   );
-};
+});
 
+CommentForm.displayName = 'CommentForm';
 export default CommentForm;
 
-const FormContainer = styled.form`
+const FormContainer = memo(styled.form`
   display: flex;
   flex-direction: column;
 
@@ -52,6 +57,7 @@ const FormContainer = styled.form`
       width: 12%;
       color: var(--color-blue);
       background-color: var(--color-white);
+      text-align: right;
     }
   }
-`;
+`);

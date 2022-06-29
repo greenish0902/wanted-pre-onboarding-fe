@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import RegexHelper from '../libs/RegexHelper';
 
-const LoginForm = () => {
+const LoginForm = memo(() => {
   const navigate = useNavigate();
   const formRef = useRef(null);
   const [done, setDone] = useState(false);
@@ -14,7 +14,7 @@ const LoginForm = () => {
   });
 
   // 유효성 검사
-  const validityCheck = (event) => {
+  const validityCheck = useCallback((event) => {
     const field = event.target;
     const regexHelper = new RegexHelper();
     try {
@@ -33,16 +33,16 @@ const LoginForm = () => {
       console.error(error);
       event.target.style.border = '1px solid var(--color-red)';
     }
-  };
+  }, []);
 
   // 로그인
-  const handleSubmit = (event) => {
+  const handleSubmit = useCallback((event) => {
     event.preventDefault();
     if (!done) return;
     localStorage.setItem('username', data.id);
     formRef.current.reset();
     navigate('/home');
-  };
+  }, []);
 
   // 상태값 저장
   useEffect(() => {
@@ -65,11 +65,12 @@ const LoginForm = () => {
       </div>
     </FormWrapper>
   );
-};
+});
 
+LoginForm.displayName = 'LoginForm';
 export default LoginForm;
 
-const FormWrapper = styled.form`
+const FormWrapper = memo(styled.form`
   padding: 24px;
   width: 360px;
   height: 600px;
@@ -100,9 +101,12 @@ const FormWrapper = styled.form`
     .inputs {
       padding: 0;
       input {
-        color: var(--color-text-gray);
+        color: var(--color-black);
         background-color: var(--color-light-gray);
         border: 1px solid var(--color-text-gray);
+        &::placeholder {
+          color: var(--color-text-gray);
+        }
       }
     }
 
@@ -115,4 +119,4 @@ const FormWrapper = styled.form`
       background-color: ${(props) => (props.done ? 'var(--color-blue)' : 'var(--color-light-blue)')};
     }
   }
-`;
+`);
