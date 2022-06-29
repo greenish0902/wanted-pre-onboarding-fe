@@ -14,35 +14,41 @@ const LoginForm = memo(() => {
   });
 
   // 유효성 검사
-  const validityCheck = useCallback((event) => {
-    const field = event.target;
-    const regexHelper = new RegexHelper();
-    try {
-      switch (field.name) {
-        // 필드명에 따른 정규표현식 프로세스 수행
-        case 'id':
-          regexHelper.email(field, '이메일 주소를 다시 확인해주세요.');
-          break;
-        case 'password':
-          regexHelper.password(field, '대문자, 숫자, 특수문자 포함 8자리 이상을 사용하세요.');
-          break;
+  const validityCheck = useCallback(
+    (event) => {
+      const field = event.target;
+      const regexHelper = new RegexHelper();
+      try {
+        switch (field.name) {
+          // 필드명에 따른 정규표현식 프로세스 수행
+          case 'id':
+            regexHelper.email(field, '이메일 주소를 다시 확인해주세요.');
+            break;
+          case 'password':
+            regexHelper.password(field, '대문자, 숫자, 특수문자 포함 8자리 이상을 사용하세요.');
+            break;
+        }
+        event.target.style.border = '1px solid var(--color-text-gray)';
+        setData((data) => ({ ...data, [field.name]: field.value }));
+      } catch (error) {
+        console.error(error);
+        event.target.style.border = '1px solid var(--color-red)';
       }
-      event.target.style.border = '1px solid var(--color-text-gray)';
-      setData((data) => ({ ...data, [field.name]: field.value }));
-    } catch (error) {
-      console.error(error);
-      event.target.style.border = '1px solid var(--color-red)';
-    }
-  }, []);
+    },
+    [data]
+  );
 
   // 로그인
-  const handleSubmit = useCallback((event) => {
-    event.preventDefault();
-    if (!done) return;
-    localStorage.setItem('username', data.id);
-    formRef.current.reset();
-    navigate('/home');
-  }, []);
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      if (!done) return;
+      localStorage.setItem('username', data.id);
+      formRef.current.reset();
+      navigate('/home');
+    },
+    [done]
+  );
 
   // 상태값 저장
   useEffect(() => {
@@ -61,7 +67,7 @@ const LoginForm = memo(() => {
           <input name="id" type="text" placeholder="전화번호, 사용자 이름 또는 이메일" />
           <input name="password" type="password" placeholder="비밀번호" autoComplete="off" />
         </div>
-        <button type="submit">로그인</button>
+        <button>로그인</button>
       </div>
     </FormWrapper>
   );
