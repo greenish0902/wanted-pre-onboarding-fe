@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect, memo, useCallback, useContext } from 'react';
 import styled from 'styled-components';
 
+import { UserContext } from '../utils/UserContextProvider';
 import RegexHelper from '../libs/RegexHelper';
 
 const LoginForm = memo(() => {
-  const navigate = useNavigate();
   const formRef = useRef(null);
+  const { signin } = useContext(UserContext);
   const [done, setDone] = useState(false);
   const [data, setData] = useState({
     id: '',
@@ -17,10 +17,10 @@ const LoginForm = memo(() => {
   const validityCheck = useCallback(
     (event) => {
       const field = event.target;
+      if (field.value === data[field.name]) return;
       const regexHelper = new RegexHelper();
       try {
         switch (field.name) {
-          // 필드명에 따른 정규표현식 프로세스 수행
           case 'id':
             regexHelper.email(field, '이메일 주소를 다시 확인해주세요.');
             break;
@@ -29,7 +29,7 @@ const LoginForm = memo(() => {
             break;
         }
         event.target.style.border = '1px solid var(--color-text-gray)';
-        setData((data) => ({ ...data, [field.name]: field.value }));
+        setData((prev) => ({ ...prev, [field.name]: field.value }));
       } catch (error) {
         console.error(error);
         event.target.style.border = '1px solid var(--color-red)';
@@ -42,17 +42,16 @@ const LoginForm = memo(() => {
   const handleSubmit = useCallback(
     (event) => {
       event.preventDefault();
-      if (!done) return;
-      localStorage.setItem('username', data.id);
+      if (!data.id || !data.password) return;
+      signin(data.id);
       formRef.current.reset();
-      navigate('/home');
     },
-    [done]
+    [data]
   );
 
-  // 상태값 저장
   useEffect(() => {
-    data.id && data.password && setDone(true);
+    if (!(data.id && data.password)) return;
+    setDone(() => true);
   }, [data]);
 
   return (

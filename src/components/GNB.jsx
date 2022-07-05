@@ -1,16 +1,16 @@
-import React, { memo, useCallback } from 'react';
-
+import React, { memo, useCallback, useContext } from 'react';
 import styled from 'styled-components';
+
+import { UserContext } from '../utils/UserContextProvider';
 import { MdHomeFilled } from 'react-icons/md';
 import { FiSearch, FiSend, FiPlusSquare, FiHeart, FiLogOut } from 'react-icons/fi';
 import { TbBrandSafari } from 'react-icons/tb';
-import { useNavigate } from 'react-router-dom';
 
 const GNB = memo(() => {
-  const navigate = useNavigate();
+  const { signout } = useContext(UserContext);
   const handleSignout = useCallback(() => {
-    localStorage.setItem('username', '');
-    navigate('/');
+    signout();
+    window.location.reload();
   }, []);
 
   return (

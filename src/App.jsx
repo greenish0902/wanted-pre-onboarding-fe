@@ -1,22 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { UserContext } from './utils/UserContextProvider';
 import LoginForm from './components/LoginForm';
 import Home from './pages/Home';
 
 const App = () => {
-  const [user, setUser] = useState('');
-
-  useEffect(() => {
-    localStorage.getItem('username') !== '' && setUser(localStorage.getItem('username'));
-  }, []);
+  const { username } = useContext(UserContext);
 
   return (
     <AppWrapper>
       <Routes>
-        <Route path={user ? '/login' : '/'} element={<LoginForm />} />
-        <Route path={user ? '/' : '/home'} element={<Home />} />
+        <Route path="/" element={username ? <Home /> : <LoginForm />} />
       </Routes>
     </AppWrapper>
   );
